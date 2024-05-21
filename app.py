@@ -27,7 +27,7 @@ class Todo(db.Model): # below we are setting up the columns.
 
 # Need to set up an index route so we don't immediately 404.
 # in flask, set up routes with the @route decorator.
-@app.route('/') 
+@app.route('/', methods=['POST', 'GET']) 
 
 def index():
     return render_template('index.html')
