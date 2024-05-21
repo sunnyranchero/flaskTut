@@ -1,4 +1,4 @@
-from flask import Flask, render_template, url_for
+from flask import Flask, render_template, url_for, request, redirect
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 
@@ -18,7 +18,7 @@ class Todo(db.Model): # below we are setting up the columns.
 
     # now need a function that will return a string when we create a new element
 
-    def __ref__(self):
+    def __repr__(self):
         return '<Task %r>' % self.id # every time we create an element it will return the task and the ID of that element
 
 # with app.app_context():
@@ -30,7 +30,20 @@ class Todo(db.Model): # below we are setting up the columns.
 @app.route('/', methods=['POST', 'GET']) 
 
 def index():
-    return render_template('index.html')
+    if request.method == 'POST':
+        task_content = request.form['content'] #content here is pulled from the text box in the html file
+        new_task = Todo(content=task_content) #todo class model
+
+        try:
+            db.session.add(new_task)
+            db.session.commit()
+            return redirect('/')
+        except:
+            return 'There was an issue adding your task.'
+
+    else:
+        tasks = Todo.query.order_by(Todo.date_created).all() # returns a listing of all the db contents
+        return render_template('index.html', tasks=tasks)
 
 # for now set debug to true so any errors show up on webpage
 if __name__ == "__main__":
