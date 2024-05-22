@@ -45,6 +45,19 @@ def index():
         tasks = Todo.query.order_by(Todo.date_created).all() # returns a listing of all the db contents
         return render_template('index.html', tasks=tasks)
 
+# create the delete portion, the pk is the easiest identifier
+@app.route('/delete/<int:id>')
+def delete(id):
+    task_to_delete = Todo.query.get_or_404(id)
+
+    try:
+        db.session.delete(task_to_delete)
+        db.session.commit()
+        return redirect('/') # redirect back to homepage
+    except:
+        return 'There was a problem deleting that task.'
+
+
 # for now set debug to true so any errors show up on webpage
 if __name__ == "__main__":
     app.run(debug=True)
