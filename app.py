@@ -4,6 +4,7 @@ from datetime import datetime
 
 # Activate Venv with .\env\Scripts\activate.ps1
 # Create Env https://stackoverflow.com/questions/73961938/flask-sqlalchemy-db-create-all-raises-runtimeerror-working-outside-of-applicat
+# to run type "python app.py" in command line. Then go to browser, this is running http://localhost:5000/
 
 app = Flask(__name__) # just references this file
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///test.db'
@@ -56,6 +57,22 @@ def delete(id):
         return redirect('/') # redirect back to homepage
     except:
         return 'There was a problem deleting that task.'
+
+@app.route('/update/<int:id>', methods=['GET', 'POST'])
+def update(id):
+    task = Todo.query.get_or_404(id)
+
+    if request.method == 'POST':
+        task.content = request.form['content']
+
+        try:
+            db.session.commit()
+            return redirect('/')
+        except:
+            return 'There was an issue updating your task.'
+    else:
+        return render_template('update.html', task=task)
+
 
 
 # for now set debug to true so any errors show up on webpage
